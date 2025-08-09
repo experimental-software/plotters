@@ -47,7 +47,7 @@ if [[ ${HELP} == 'true' ]]; then
 fi
 
 if [[ ${UPDATE_VERSON} == 'true' || "$(docker images -q ${DOCKER_IMAGE} 2> /dev/null)" == "" ]]; then
-  docker pull ${DOCKER_IMAGE} || exit 1
+  docker pull ${DOCKER_IMAGE}
   echo
 fi
 
@@ -57,7 +57,7 @@ if [[ ${SHOW_VERSION} == 'true' ]]; then
   echo "Also see:"
   echo "- https://hub.docker.com/r/karfau/plantuml/tags"
   echo "- https://plantuml.com/download"
-  exit 0
+  echo
 fi
 
 if [[ -z "$DIAGRAM" ]]; then
