@@ -22,18 +22,12 @@ The plotters are tested on Ubuntu and macOS.
 
 ## Setup
 
-For the setup, it is recommended to clone this repository and then add its `/bin` directory into your `PATH` variable.
+For the setup, it is recommended to clone this repository and then add its `/bin` directory into your `PATH` variable defined e.g. in `~/.bashrc` or `~/.bash_profile`:
 
 ```bash
 git clone git@github.com:experimental-software/plotters.git
-cd plotters
-PATH="$(pwd)/bin:${PATH}"
-```
-
-To have access to the plotters every time you start a new terminal, add the path extension into your `~/.bashrc` or `~/.bash_profile`, e.g. like this:
-
-```bash
-PATH="~/src/experimental-software/plotters/bin:${PATH}"
+cd plotters/bin
+echo "PATH=${PWD}"':${PATH}'
 ```
 
 ## Usage
