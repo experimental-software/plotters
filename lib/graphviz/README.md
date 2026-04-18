@@ -13,7 +13,7 @@ cat t/hello-world.dot | docker run --rm -i experimentalsoftware/graphviz-dot dot
 gradle build
 
 # Set the version tag
-export GRAPHVIZ_VERSION=2.50.0
+export GRAPHVIZ_VERSION=14.1.4
 gradle tag
 
 # Publish to Docker Hub

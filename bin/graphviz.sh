@@ -6,8 +6,7 @@ which dirname > /dev/null 2>&1 || { echo "ERROR: \`dirname\` not installed" ; ex
 which basename > /dev/null 2>&1 || { echo "ERROR: \`basename\` not installed" ; exit 1; }
 
 # https://hub.docker.com/repository/docker/experimentalsoftware/graphviz-dot/tags
-# https://gitlab.com/graphviz/graphviz/-/tags
-GRAPHVIZ_VERSION=2.50.0
+GRAPHVIZ_VERSION=14.1.4
 
 FORMAT="png"
 
