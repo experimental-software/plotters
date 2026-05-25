@@ -1,1 +1,4 @@
 .gradle/
+.junie/memory/
+.junie/tmp/
+.idea/
