@@ -59,7 +59,25 @@ fi
 DIAGRAM=$(perl -MCwd -e 'print Cwd::abs_path shift' "${DIAGRAM}")
 DIRNAME=$(dirname "${DIAGRAM}")
 BASENAME=$(basename -- "${DIAGRAM}")
-TARGET_FILE_NAME="${BASENAME%.*}.${FORMAT}"
+
+
+function count_previously_generated_target_files() {
+  find "${DIRNAME}" -maxdepth 1 -name "${BASENAME%.*}*.${FORMAT}" -type f 2>/dev/null | wc -l
+}
+
+function get_target_file_name() {
+  local NUMBER_OF_TARGET_FILES
+  NUMBER_OF_TARGET_FILES=$(count_previously_generated_target_files)
+  if [[ "$NUMBER_OF_TARGET_FILES" -eq 0 ]]; then
+    echo "${BASENAME%.*}.${FORMAT}"
+  else
+    local NUMBER_OF_TARGET_FILES_FORMATTED
+    NUMBER_OF_TARGET_FILES_FORMATTED=$(printf "%02d" "$NUMBER_OF_TARGET_FILES")
+    echo "${BASENAME%.*}_${NUMBER_OF_TARGET_FILES_FORMATTED}.${FORMAT}"
+  fi
+}
+
+TARGET_FILE_NAME=$(get_target_file_name)
 
 docker run --rm -v "${DIRNAME}:/data" rlespinasse/drawio-desktop-headless \
   --export \
