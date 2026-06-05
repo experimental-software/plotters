@@ -45,4 +45,5 @@ RESULT="${BASENAME%.*}.png"
 set +e
 
 docker run --rm -v "${DIRNAME}:/data" rlespinasse/drawio-desktop-headless \
-  --export --format png --output /data/"${RESULT}" /data/"${BASENAME}"
+  --export --format png --output /data/"${RESULT}" /data/"${BASENAME}" --border 0
+
