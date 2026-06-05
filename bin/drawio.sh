@@ -3,6 +3,7 @@
 set -e
 
 FORMAT="png"
+PAGE_INDEX="1"
 
 which docker > /dev/null 2>&1 || { echo "ERROR: \`docker\` not installed" ; exit 1; }
 which perl > /dev/null 2>&1 || { echo "ERROR: \`perl\` not installed" ; exit 1; }
@@ -21,13 +22,15 @@ Examples:
 
 Options:
         -f  The format of the generated image (Default: png).
+        -p  The 1-based page index in the diagram (Default: 1).
         -h  Print the help text.
 EOF
 )
 
-while getopts "f:h" flag; do
+while getopts "f:p:h" flag; do
 case "$flag" in
     f) FORMAT=$OPTARG;;
+    p) PAGE_INDEX=$OPTARG;;
     h) HELP='true';;
     \?)
         echo "Invalid flag: -$OPTARG" >&2
@@ -43,6 +46,11 @@ if [[ "$FORMAT" != "png" && "$FORMAT" != "svg" ]]; then
   exit 1
 fi
 
+if ! [[ "$PAGE_INDEX" =~ ^[0-9]+$ ]] || [[ "$PAGE_INDEX" -lt 1 ]]; then
+  echo "ERROR: PAGE_INDEX must be an integer greater than or equal to 1, got '$PAGE_INDEX'" >&2
+  exit 1
+fi
+
 if [[ $HELP == 'true' || -z "$DIAGRAM" ]]; then
   echo "${USAGE}" >&2
   exit 1
@@ -54,4 +62,11 @@ BASENAME=$(basename -- "${DIAGRAM}")
 TARGET_FILE_NAME="${BASENAME%.*}.${FORMAT}"
 
 docker run --rm -v "${DIRNAME}:/data" rlespinasse/drawio-desktop-headless \
-  --export --format png --output /data/"${TARGET_FILE_NAME}" /data/"${BASENAME}" --border 0
+  --export \
+  --format png \
+  --output /data/"${TARGET_FILE_NAME}" \
+  --page-index "${PAGE_INDEX}" \
+  --border 0 \
+  /data/"${BASENAME}"
+
+#docker run --rm -v "${DIRNAME}:/data" rlespinasse/drawio-desktop-headless --help
