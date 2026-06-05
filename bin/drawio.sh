@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+set -e
+
+FORMAT="png"
+
 which docker > /dev/null 2>&1 || { echo "ERROR: \`docker\` not installed" ; exit 1; }
 which perl > /dev/null 2>&1 || { echo "ERROR: \`perl\` not installed" ; exit 1; }
 which dirname > /dev/null 2>&1 || { echo "ERROR: \`dirname\` not installed" ; exit 1; }
@@ -20,8 +24,9 @@ Options:
 EOF
 )
 
-while getopts ":h" flag; do
+while getopts "f:h" flag; do
 case "$flag" in
+    f) FORMAT=$OPTARG;;
     h) HELP='true';;
     \?)
         echo "Invalid flag: -$OPTARG" >&2
@@ -32,18 +37,20 @@ done
 
 DIAGRAM=${*:OPTIND:1}
 
+if [[ "$FORMAT" != "png" && "$FORMAT" != "svg" ]]; then
+  echo "ERROR: FORMAT must be 'png' or 'svg', got '$FORMAT'" >&2
+  exit 1
+fi
+
 if [[ $HELP == 'true' || -z "$DIAGRAM" ]]; then
   echo "${USAGE}" >&2
   exit 1
 fi
 
-set -e
 DIAGRAM=$(perl -MCwd -e 'print Cwd::abs_path shift' "${DIAGRAM}")
 DIRNAME=$(dirname "${DIAGRAM}")
 BASENAME=$(basename -- "${DIAGRAM}")
-RESULT="${BASENAME%.*}.png"
-set +e
+TARGET_FILE_NAME="${BASENAME%.*}.${FORMAT}"
 
 docker run --rm -v "${DIRNAME}:/data" rlespinasse/drawio-desktop-headless \
-  --export --format png --output /data/"${RESULT}" /data/"${BASENAME}" --border 0
-
+  --export --format png --output /data/"${TARGET_FILE_NAME}" /data/"${BASENAME}" --border 0
