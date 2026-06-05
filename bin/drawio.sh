@@ -12,7 +12,7 @@ which basename > /dev/null 2>&1 || { echo "ERROR: \`basename\` not installed" ; 
 USAGE=$(cat <<EOF
 draw.io wrapper
 
-Renders a PNG file as a sibling of a "drawio" source file.
+Renders an image file as a sibling of a "drawio" source file.
 
 Usage:  drawio.sh [option] source-file
 
@@ -20,6 +20,7 @@ Examples:
         drawio.sh hello-world.drawio
 
 Options:
+        -f  The format of the generated image (Default: png).
         -h  Print the help text.
 EOF
 )
