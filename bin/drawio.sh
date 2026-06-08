@@ -15,7 +15,7 @@ draw.io wrapper
 
 Renders an image file as a sibling of a "drawio" source file.
 
-Usage:  drawio.sh [option] source-file
+Usage:  drawio.sh [option] <source-file>
 
 Examples:
         drawio.sh hello-world.drawio
