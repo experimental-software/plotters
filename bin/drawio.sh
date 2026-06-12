@@ -5,6 +5,7 @@ set -e
 FORMAT="png"
 PAGE_INDEX="1"
 BORDER_SIZE="0"
+COUNTER="false"
 
 USAGE=$(cat <<EOF
 draw.io wrapper
@@ -20,15 +21,17 @@ Options:
         -f  The format of the generated image (Default: png).
         -p  The 1-based page index in the diagram (Default: 1).
         -b  The border size (Default: 0).
+        -c  Flag to add a counter suffix to the generated image (Default: false).
         -h  Print the help text.
 EOF
 )
 
-while getopts "f:p:b:h" flag; do
+while getopts "f:p:b:hc" flag; do
 case "$flag" in
     f) FORMAT=$OPTARG;;
     p) PAGE_INDEX=$OPTARG;;
     b) BORDER_SIZE=$OPTARG;;
+    c) COUNTER='true';;
     h) HELP='true';;
     \?)
         echo "Invalid flag: -$OPTARG" >&2
@@ -69,24 +72,37 @@ which basename > /dev/null 2>&1 || { echo "ERROR: \`basename\` not installed" ; 
 # --------------------------------------------------------------------------------------------------
 
 function count_previously_generated_target_files() {
-  find "${DIRNAME}" -maxdepth 1 -name "${BASENAME%.*}*.${FORMAT}" -type f 2>/dev/null | wc -l
+  find "${DIRNAME}" -maxdepth 1 -name "${BASENAME%.*}_*.${FORMAT}" -type f 2>/dev/null | wc -l
 }
 
 function get_target_file_name() {
+  if [[ "$COUNTER" != "true" ]]; then
+      echo "${BASENAME%.*}.${FORMAT}"
+      return
+  fi
   local NUMBER_OF_TARGET_FILES
   NUMBER_OF_TARGET_FILES=$(count_previously_generated_target_files)
-  if [[ "$NUMBER_OF_TARGET_FILES" -eq 0 ]]; then
-    echo "${BASENAME%.*}.${FORMAT}"
-  else
-    local NUMBER_OF_TARGET_FILES_FORMATTED
-    NUMBER_OF_TARGET_FILES_FORMATTED=$(printf "%02d" "$NUMBER_OF_TARGET_FILES")
-    echo "${BASENAME%.*}_${NUMBER_OF_TARGET_FILES_FORMATTED}.${FORMAT}"
-  fi
+  local NEW_FILE_NUMBER
+  NEW_FILE_NUMBER=$((NUMBER_OF_TARGET_FILES + 1))
+  local NEW_FILE_NUMBER_FORMATTED
+  NEW_FILE_NUMBER_FORMATTED=$(printf "%02d" "$NEW_FILE_NUMBER")
+  echo "${BASENAME%.*}_${NEW_FILE_NUMBER_FORMATTED}.${FORMAT}"
 }
 
 # --------------------------------------------------------------------------------------------------
 
-DIAGRAM=$(perl -MCwd -e 'print Cwd::abs_path shift' "${DIAGRAM}")
+if [[ ! -f "$DIAGRAM" ]]; then
+  echo "ERROR: File does not exist: '$DIAGRAM'" >&2
+  exit 1
+fi
+
+DIAGRAM_INPUT=${DIAGRAM}
+DIAGRAM=$(perl -MCwd -e 'print Cwd::abs_path shift' "${DIAGRAM_INPUT}")
+if [[ -z "$DIAGRAM" ]]; then
+  echo "ERROR: Failed to resolve absolute path for file: '$DIAGRAM_INPUT'" >&2
+  exit 1
+fi
+
 DIRNAME=$(dirname "${DIAGRAM}")
 BASENAME=$(basename -- "${DIAGRAM}")
 TARGET_FILE_NAME=$(get_target_file_name)
