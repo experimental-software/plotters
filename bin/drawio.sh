@@ -2,7 +2,7 @@
 
 set -e
 
-FORMAT="png"
+FORMAT="svg"
 PAGE_INDEX="1"
 BORDER_SIZE="0"
 COUNTER="false"
@@ -18,7 +18,7 @@ Examples:
         drawio.sh hello-world.drawio
 
 Options:
-        -f  The format of the generated image (Default: png).
+        -f  The format of the generated image (Default: svg).
         -p  The 1-based page index in the diagram (Default: 1).
         -b  The border size (Default: 0).
         -c  Flag to add a counter suffix to the generated image (Default: false).
@@ -115,4 +115,4 @@ docker run --rm -v "${DIRNAME}:/data" rlespinasse/drawio-desktop-headless \
   --border "${BORDER_SIZE}" \
   /data/"${BASENAME}"
 
-#docker run --rm -v "${DIRNAME}:/data" rlespinasse/drawio-desktop-headless --help
+# docker run --rm -v "${DIRNAME}:/data" rlespinasse/drawio-desktop-headless --help
